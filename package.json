@@ -1,0 +1,23 @@
+{
+  "name": "poker-planner",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check-types": "turbo check-types",
+    "dev:native": "turbo -F native dev",
+    "dev:web": "turbo -F web dev",
+    "dev:server": "turbo -F @poker-planner/backend dev",
+    "dev:setup": "turbo -F @poker-planner/backend dev:setup"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "turbo": "^2.5.4"
+  },
+  "packageManager": "pnpm@9.1.0"
+}
