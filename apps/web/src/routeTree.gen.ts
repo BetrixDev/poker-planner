@@ -16,6 +16,7 @@ import { Route as RoomRouteImport } from './routes/room'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RoomRoomIdRouteImport } from './routes/room_.$roomId'
+import { Route as JoinInviteCodeRouteImport } from './routes/join.$inviteCode'
 
 const TodosRoute = TodosRouteImport.update({
   id: '/todos',
@@ -52,6 +53,11 @@ const RoomRoomIdRoute = RoomRoomIdRouteImport.update({
   path: '/room/$roomId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const JoinInviteCodeRoute = JoinInviteCodeRouteImport.update({
+  id: '/join/$inviteCode',
+  path: '/join/$inviteCode',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/todos': typeof TodosRoute
+  '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/room/$roomId': typeof RoomRoomIdRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +76,7 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/todos': typeof TodosRoute
+  '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/room/$roomId': typeof RoomRoomIdRoute
 }
 export interface FileRoutesById {
@@ -79,6 +87,7 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/todos': typeof TodosRoute
+  '/join/$inviteCode': typeof JoinInviteCodeRoute
   '/room_/$roomId': typeof RoomRoomIdRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +99,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/todos'
+    | '/join/$inviteCode'
     | '/room/$roomId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +109,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/todos'
+    | '/join/$inviteCode'
     | '/room/$roomId'
   id:
     | '__root__'
@@ -108,6 +119,7 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/todos'
+    | '/join/$inviteCode'
     | '/room_/$roomId'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +130,7 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   SignUpRoute: typeof SignUpRoute
   TodosRoute: typeof TodosRoute
+  JoinInviteCodeRoute: typeof JoinInviteCodeRoute
   RoomRoomIdRoute: typeof RoomRoomIdRoute
 }
 
@@ -172,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RoomRoomIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/join/$inviteCode': {
+      id: '/join/$inviteCode'
+      path: '/join/$inviteCode'
+      fullPath: '/join/$inviteCode'
+      preLoaderRoute: typeof JoinInviteCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -182,6 +202,7 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   SignUpRoute: SignUpRoute,
   TodosRoute: TodosRoute,
+  JoinInviteCodeRoute: JoinInviteCodeRoute,
   RoomRoomIdRoute: RoomRoomIdRoute,
 }
 export const routeTree = rootRouteImport

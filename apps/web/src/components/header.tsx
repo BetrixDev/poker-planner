@@ -55,18 +55,11 @@ export function Header() {
             >
               How It Works
             </a>
-            <a
-              href="#pricing"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Pricing
-            </a>
-            <a
-              href="#testimonials"
-              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Testimonials
-            </a>
+            <Link to="/room" search={{ tab: "create" }}>
+              <span className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+                Create a Room
+              </span>
+            </Link>
           </nav>
 
           <div className="flex items-center gap-4">

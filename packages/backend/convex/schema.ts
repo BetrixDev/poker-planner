@@ -10,18 +10,21 @@ export default defineSchema({
   rooms: defineTable({
     code: v.string(),
     password: v.optional(v.string()),
+    inviteLink: v.string(),
     name: v.string(),
-    facilitatorIds: v.array(v.id("users")),
+    facilitatorIds: v.array(v.string()),
     status: v.union(v.literal("votingActive"), v.literal("votesRevealed")),
     currentIssueId: v.optional(v.id("issues")),
     settings: v.object({}),
   })
     .index("by_code", ["code"])
-    .index("by_facilitators", ["facilitatorIds"]),
+    .index("by_facilitators", ["facilitatorIds"])
+    .index("by_invite_link", ["inviteLink"]),
 
   roomUsers: defineTable({
     roomId: v.id("rooms"),
-    userId: v.id("users"),
+    userId: v.string(),
+    displayName: v.optional(v.string()),
     isSpectator: v.boolean(),
     lastSeen: v.number(),
   })
@@ -31,7 +34,7 @@ export default defineSchema({
 
   votes: defineTable({
     roomId: v.id("rooms"),
-    userId: v.id("users"),
+    userId: v.string(),
     issueId: v.optional(v.id("issues")),
     value: v.number(),
     votedAt: v.number(),

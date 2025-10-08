@@ -63,7 +63,7 @@ function RouteComponent() {
                 </Link>
               </BreadcrumbItem>
               <BreadcrumbSeparator className="hidden md:block" />
-              <Link to="/room">
+              <Link to="/room" search={{ tab: "join" }}>
                 <BreadcrumbLink>Rooms</BreadcrumbLink>
               </Link>
               <BreadcrumbSeparator className="hidden md:block" />

@@ -27,7 +27,7 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
-            <Link to="/room">
+            <Link to="/room" search={{ tab: "create" }}>
               <Button
                 size="lg"
                 className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12"

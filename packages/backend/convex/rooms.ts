@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { internalMutation, mutation, query } from "./_generated/server";
 import { Id } from "./_generated/dataModel";
 
 // Generate a unique 6-character room code
@@ -42,6 +42,7 @@ export const createRoom = mutation({
       name: args.name,
       password: args.password,
       status: "votingActive",
+      inviteLink: `${process.env.SITE_URL}/join/${code}`,
       currentIssueId: undefined,
       settings: {},
       facilitatorIds: [],
@@ -51,6 +52,7 @@ export const createRoom = mutation({
     await ctx.db.insert("roomUsers", {
       roomId,
       userId: identity.subject as any,
+      displayName: identity.name,
       isSpectator: false,
       lastSeen: Date.now(),
     });
@@ -109,6 +111,18 @@ export const getRoomById = query({
   },
 });
 
+export const getRoomByInviteCode = query({
+  args: {
+    code: v.string(),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("rooms")
+      .withIndex("by_code", (q) => q.eq("code", args.code))
+      .first();
+  },
+});
+
 export const getRoomIssues = query({
   args: {
     roomId: v.id("rooms"),
@@ -118,5 +132,32 @@ export const getRoomIssues = query({
       .query("issues")
       .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
       .collect();
+  },
+});
+
+export const deleteRoom = mutation({
+  args: {
+    id: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("User is not authenticated");
+    }
+
+    const room = await ctx.db.get(args.id);
+
+    if (!room) {
+      throw new ConvexError("Room not found");
+    }
+
+    const isFacilitator = room.facilitatorIds.includes(identity.subject as any);
+
+    if (!isFacilitator) {
+      throw new ConvexError("You must be a facilitator to delete a room");
+    }
+
+    return await ctx.db.delete(args.id);
   },
 });

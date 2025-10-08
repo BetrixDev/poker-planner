@@ -15,16 +15,29 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useConvexAuth, useMutation } from "convex/react";
 import { useEffect } from "react";
+import { z } from "zod";
+
+const validateSearchSchema = z.object({
+  tab: z.enum(["create", "join"]).default("create"),
+});
 
 export const Route = createFileRoute("/room")({
   component: RouteComponent,
+  validateSearch: (search) => validateSearchSchema.parse(search),
 });
 
 function RouteComponent() {
+  const search = Route.useSearch();
+  const navigate = Route.useNavigate();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
       Create or join a room
-      <Tabs defaultValue="account" className="w-[400px]">
+      <Tabs
+        onValueChange={(value) => navigate({ search: { tab: value as any } })}
+        defaultValue={search.tab}
+        className="w-[400px]"
+      >
         <TabsList>
           <TabsTrigger value="create">Create a room</TabsTrigger>
           <TabsTrigger value="join">Join a room</TabsTrigger>

@@ -42,6 +42,12 @@ function RootComponent() {
     select: (s) => s.isLoading,
   });
 
+  const path = useRouterState({
+    select: (s) => s.location.pathname,
+  });
+
+  const isRoomPage = path.startsWith("/room/");
+
   return (
     <>
       <HeadContent />
@@ -52,6 +58,7 @@ function RootComponent() {
         storageKey="vite-ui-theme"
       >
         <div className="grid grid-rows-[auto_1fr] h-svh">
+          {!isRoomPage && <Header />}
           {isFetching ? <Loader /> : <Outlet />}
         </div>
         <Toaster richColors />
