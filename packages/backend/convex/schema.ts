@@ -6,26 +6,22 @@ export default defineSchema({
     text: v.string(),
     completed: v.boolean(),
   }),
+
   rooms: defineTable({
     code: v.string(),
+    password: v.optional(v.string()),
     name: v.string(),
-    facilitatorId: v.id("users"),
-    isVotingActive: v.boolean(),
-    votesRevealed: v.boolean(),
+    facilitatorIds: v.array(v.id("users")),
+    status: v.union(v.literal("votingActive"), v.literal("votesRevealed")),
     currentIssueId: v.optional(v.id("issues")),
-    settings: v.object({
-      allowSpectators: v.boolean(),
-      autoReveal: v.boolean(),
-      customCards: v.optional(v.array(v.string())),
-    }),
+    settings: v.object({}),
   })
     .index("by_code", ["code"])
-    .index("by_facilitator", ["facilitatorId"]),
+    .index("by_facilitators", ["facilitatorIds"]),
 
   roomUsers: defineTable({
     roomId: v.id("rooms"),
     userId: v.id("users"),
-    displayName: v.string(),
     isSpectator: v.boolean(),
     lastSeen: v.number(),
   })

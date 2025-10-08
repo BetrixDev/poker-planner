@@ -20,6 +20,7 @@ export function Features() {
       title: "Insightful Analytics",
       description:
         "Track estimation patterns, velocity trends, and team alignment over time with powerful analytics.",
+      comingSoon: true,
     },
     {
       icon: Lock,
@@ -38,6 +39,7 @@ export function Features() {
       title: "AI-Powered Insights",
       description:
         "Get smart suggestions based on historical data and similar stories to improve estimation accuracy.",
+      comingSoon: true,
     },
   ];
 
@@ -58,9 +60,19 @@ export function Features() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="p-6 md:p-8 hover:shadow-lg transition-shadow duration-300 animate-fade-in-up"
+              className={`relative overflow-hidden p-6 md:p-8 hover:shadow-lg transition-shadow duration-300 animate-fade-in-up ${
+                feature.comingSoon ? "border border-yellow-300/50" : ""
+              }`}
               style={{ animationDelay: `${index * 100}ms` }}
             >
+              {feature.comingSoon && (
+                <>
+                  <div className="pointer-events-none absolute -left-4 top-10 rotate-[-5deg] bg-amber-300 text-amber-950 font-semibold tracking-[0.2em] px-6 py-1 shadow-md drop-shadow-sm">
+                    COMING SOON
+                  </div>
+                  <div className="inset-0 absolute bg-background/25"></div>
+                </>
+              )}
               <div className="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center mb-4">
                 <feature.icon className="h-6 w-6 text-secondary" />
               </div>

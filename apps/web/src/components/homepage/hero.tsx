@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Link } from "@tanstack/react-router";
 import { ArrowRight, Play } from "lucide-react";
 
 export function Hero() {
@@ -6,10 +7,10 @@ export function Hero() {
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-secondary/10 text-secondary text-sm font-medium mb-8 animate-fade-in">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300 text-sm font-medium mb-8 animate-fade-in">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 dark:bg-green-300"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500 dark:bg-green-400"></span>
             </span>
             With real-time collaboration
           </div>
@@ -26,25 +27,29 @@ export function Hero() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-400">
-            <Button
-              size="lg"
-              className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12"
-            >
-              Start Planning Free
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="text-base px-8 h-12 bg-transparent"
-            >
-              <Play className="mr-2 h-4 w-4" />
-              Watch Demo
-            </Button>
+            <Link to="/room">
+              <Button
+                size="lg"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12"
+              >
+                Create or join a room
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/sign-up">
+              <Button
+                size="lg"
+                variant="outline"
+                className="text-base px-8 h-12 bg-transparent"
+              >
+                <Play className="mr-2 h-4 w-4" />
+                Sign up for free
+              </Button>
+            </Link>
           </div>
 
           <p className="text-sm text-muted-foreground mt-6 animate-fade-in-up animation-delay-600">
-            No credit card required • Free forever for small teams
+            No account required • Free forever for small teams
           </p>
         </div>
       </div>

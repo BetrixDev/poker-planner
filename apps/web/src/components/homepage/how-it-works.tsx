@@ -47,7 +47,7 @@ export function HowItWorks() {
               className="p-6 md:p-8 relative animate-fade-in-up"
               style={{ animationDelay: `${index * 100}ms` }}
             >
-              <div className="text-6xl font-bold text-secondary/20 mb-4">
+              <div className="text-6xl font-bold text-accent mb-4">
                 {step.number}
               </div>
               <h3 className="text-xl font-semibold mb-3">{step.title}</h3>

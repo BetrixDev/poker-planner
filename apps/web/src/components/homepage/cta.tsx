@@ -23,16 +23,9 @@ export function CTA() {
                 Start Planning Free
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="text-base px-8 h-12 bg-transparent border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
-              >
-                Schedule a Demo
-              </Button>
             </div>
             <p className="text-sm mt-6 opacity-75">
-              No credit card required • Free forever for teams up to 5
+              No credit card required • Free forever for teams up to 14 members
             </p>
           </div>
 

@@ -1,30 +1,5 @@
 export function Stats() {
-  const stats = [
-    {
-      value: "50%",
-      label: "faster",
-      description: "sprint planning",
-      company: "Shopify",
-    },
-    {
-      value: "10k+",
-      label: "teams",
-      description: "trust us daily",
-      company: "Atlassian",
-    },
-    {
-      value: "95%",
-      label: "consensus",
-      description: "rate achieved",
-      company: "Stripe",
-    },
-    {
-      value: "2M+",
-      label: "estimates",
-      description: "completed",
-      company: "GitHub",
-    },
-  ];
+  const stats: any[] = [];
 
   return (
     <section className="py-16 md:py-24 border-y border-border bg-muted/30">

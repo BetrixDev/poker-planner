@@ -10,19 +10,22 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
+import type { QueryClient } from "@tanstack/react-query";
 
-export interface RouterAppContext {}
+export interface RouterAppContext {
+  queryClient: QueryClient;
+}
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
   component: RootComponent,
   head: () => ({
     meta: [
       {
-        title: "poker-planner",
+        title: "Poker Planner",
       },
       {
         name: "description",
-        content: "poker-planner is a web application",
+        content: "Poker Planner is a collaborative effort estimation tool",
       },
     ],
     links: [
@@ -49,7 +52,6 @@ function RootComponent() {
         storageKey="vite-ui-theme"
       >
         <div className="grid grid-rows-[auto_1fr] h-svh">
-          <Header />
           {isFetching ? <Loader /> : <Outlet />}
         </div>
         <Toaster richColors />
