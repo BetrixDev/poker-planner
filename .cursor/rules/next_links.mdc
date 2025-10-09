@@ -1,0 +1,14 @@
+---
+globs: **/*.ts,**/*.tsx,**/*.js,**/*.jsx
+description: Guidelines and best practices for using Next.js links
+---
+
+When you have a button or similar element that navigates to a new page, use the `Link` component from Next.js to navigate to the new page. For example:
+
+```tsx
+<Link href="/new-page">
+  <Button>Go to new page</Button>
+</Link>
+```
+
+**Avoid using router.push() to navigate to a new page whenever possible.**

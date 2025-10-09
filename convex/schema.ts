@@ -2,36 +2,35 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
-  todos: defineTable({
-    text: v.string(),
-    completed: v.boolean(),
-  }),
-
   rooms: defineTable({
     code: v.string(),
     password: v.optional(v.string()),
-    inviteLink: v.string(),
     name: v.string(),
     facilitatorIds: v.array(v.string()),
     ownerId: v.string(),
     status: v.union(v.literal("votingActive"), v.literal("votesRevealed")),
     currentIssueId: v.optional(v.id("issues")),
     settings: v.object({}),
+    users: v.array(
+      v.object({
+        presenceId: v.string(),
+        displayName: v.string(),
+        isSpectator: v.boolean(),
+      })
+    ),
   })
     .index("by_code", ["code"])
     .index("by_facilitators", ["facilitatorIds"])
-    .index("by_invite_link", ["inviteLink"]),
+    .index("by_owner", ["ownerId"]),
 
-  roomUsers: defineTable({
+  inviteLinks: defineTable({
     roomId: v.id("rooms"),
-    userId: v.string(),
-    displayName: v.optional(v.string()),
-    isSpectator: v.boolean(),
-    lastSeen: v.number(),
+    link: v.string(),
+    usesLeft: v.optional(v.number()),
+    expiresAt: v.optional(v.number()),
   })
     .index("by_room", ["roomId"])
-    .index("by_user", ["userId"])
-    .index("by_room_and_user", ["roomId", "userId"]),
+    .index("by_link", ["link"]),
 
   votes: defineTable({
     roomId: v.id("rooms"),
@@ -43,17 +42,6 @@ export default defineSchema({
     .index("by_room", ["roomId"])
     .index("by_room_and_issue", ["roomId", "issueId"])
     .index("by_room_and_user", ["roomId", "userId"]),
-
-  sprints: defineTable({
-    roomId: v.id("rooms"),
-    name: v.string(),
-    startDate: v.number(),
-    description: v.optional(v.string()),
-    endDate: v.number(),
-    order: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_room_and_order", ["roomId", "order"]),
 
   issues: defineTable({
     roomId: v.id("rooms"),

@@ -1,6 +1,5 @@
 import { cookies } from "next/headers";
 import { Table } from "./(components)/table";
-import { authClient } from "~/lib/auth-client";
 import { getToken } from "~/lib/auth-server";
 import { api } from "~/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";

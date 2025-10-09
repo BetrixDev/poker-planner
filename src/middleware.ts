@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionCookie } from "better-auth/cookies";
 import { nanoid } from "nanoid";
-import http from "../convex/http";
 
 // This middleware is used to give un-authed users a unique id to use for presence in rooms
 export function middleware(req: NextRequest) {

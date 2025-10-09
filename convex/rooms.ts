@@ -42,20 +42,12 @@ export const createRoom = mutation({
       name: args.name,
       password: args.password,
       status: "votingActive",
-      inviteLink: `${process.env.SITE_URL}/join/${code}`,
       currentIssueId: undefined,
       settings: {},
       facilitatorIds: [],
       ownerId: user.subject,
       code,
-    });
-
-    await ctx.db.insert("roomUsers", {
-      roomId,
-      userId: user.subject as any,
-      displayName: user.name,
-      isSpectator: false,
-      lastSeen: Date.now(),
+      users: [],
     });
 
     return roomId;
@@ -88,12 +80,7 @@ export const getRoomById = query({
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.id);
 
-    const roomUsers = await ctx.db
-      .query("roomUsers")
-      .withIndex("by_room", (q) => q.eq("roomId", args.id))
-      .collect();
     const roomIssues = await ctx.db
-
       .query("issues")
       .withIndex("by_room", (q) => q.eq("roomId", args.id))
       .collect();
@@ -105,7 +92,6 @@ export const getRoomById = query({
 
     return {
       room,
-      users: roomUsers,
       issues: roomIssues,
       votes: roomVotes,
     };
@@ -153,12 +139,78 @@ export const deleteRoom = mutation({
       throw new ConvexError("Room not found");
     }
 
-    const isFacilitator = room.facilitatorIds.includes(identity.subject as any);
-
-    if (!isFacilitator) {
-      throw new ConvexError("You must be a facilitator to delete a room");
+    if (room.ownerId !== identity.subject) {
+      throw new ConvexError("You must be the owner to delete this room");
     }
 
-    return await ctx.db.delete(args.id);
+    // Delete all issues associated with the room
+    const issues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", args.id))
+      .collect();
+
+    for (const issue of issues) {
+      await ctx.db.delete(issue._id);
+    }
+
+    // Delete all votes associated with the room
+    const votes = await ctx.db
+      .query("votes")
+      .withIndex("by_room", (q) => q.eq("roomId", args.id))
+      .collect();
+
+    for (const vote of votes) {
+      await ctx.db.delete(vote._id);
+    }
+
+    await ctx.db.delete(args.id);
+    return null;
+  },
+});
+
+export const listRoomsForUser = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("You must be logged in to view your rooms");
+    }
+
+    const rooms = await ctx.db
+      .query("rooms")
+      .withIndex("by_owner", (q) => q.eq("ownerId", identity.subject))
+      .collect();
+
+    return {
+      rooms,
+    };
+  },
+});
+
+export const renameRoom = mutation({
+  args: {
+    id: v.id("rooms"),
+    name: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("User is not authenticated");
+    }
+
+    const room = await ctx.db.get(args.id);
+
+    if (!room) {
+      throw new ConvexError("Room not found");
+    }
+
+    if (room.ownerId !== identity.subject) {
+      throw new ConvexError("You must be the owner to rename this room");
+    }
+
+    await ctx.db.patch(args.id, { name: args.name });
+    return null;
   },
 });

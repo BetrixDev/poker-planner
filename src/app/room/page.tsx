@@ -78,7 +78,7 @@ export default function Page() {
         <Card className="mx-auto mt-12 max-w-4xl border-border/80 bg-background/90 shadow-xl backdrop-blur-sm">
           <CardHeader className="pb-0 text-center">
             <CardTitle className="text-2xl font-semibold">
-              Manage your rooms
+              Create or join a room
             </CardTitle>
             <CardDescription>
               Choose how you want to start collaborating with your team.
@@ -133,11 +133,9 @@ export default function Page() {
           <p className="text-base font-medium text-muted-foreground">
             Have an invite link instead?
           </p>
-          <Link href={`/join/${""}`}>
-            <Button variant="outline" className="gap-2">
-              Paste invite code URL
-            </Button>
-          </Link>
+          <Button variant="outline" className="gap-2" disabled>
+            <Link href={`/join/${""}`}>Paste invite code URL</Link>
+          </Button>
         </div>
       </div>
     </main>
