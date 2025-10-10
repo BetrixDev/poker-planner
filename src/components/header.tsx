@@ -96,7 +96,7 @@ export function Header() {
             <SignedIn>
               <UserButton
                 size="sm"
-                className="hidden md:inline-flex"
+                className="hidden md:inline-flex text-foreground hover:bg-secondary/75 bg-secondary/50 border"
                 additionalLinks={[
                   {
                     href: "/my-rooms",

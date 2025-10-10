@@ -17,7 +17,7 @@ export function Hero() {
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-balance animate-fade-in-up">
             Agile estimation made{" "}
-            <span className="text-secondary">effortless</span>
+            <span className="text-primary">effortless</span>
           </h1>
 
           <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed animate-fade-in-up animation-delay-200">
@@ -30,7 +30,7 @@ export function Hero() {
             <Link href="/room?tab=create">
               <Button
                 size="lg"
-                className="bg-primary text-primary-foreground hover:bg-primary/90 text-base px-8 h-12"
+                className="bg-primary text-foreground hover:bg-primary/90 text-base px-8 h-12"
               >
                 Create or join a room
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -49,7 +49,7 @@ export function Hero() {
           </div>
 
           <p className="text-sm text-muted-foreground mt-6 animate-fade-in-up animation-delay-600">
-            No account required • Free forever for small teams
+            No account required • Free for small teams
           </p>
         </div>
       </div>

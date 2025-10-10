@@ -277,7 +277,7 @@ function CreateRoomForm() {
               {(state) => (
                 <Button
                   type="submit"
-                  className="w-full sm:w-fit"
+                  className="w-full"
                   disabled={!state.canSubmit || state.isSubmitting}
                 >
                   {state.isSubmitting ? "Creating room..." : "Create room"}
@@ -394,7 +394,7 @@ function JoinRoomForm() {
           {(state) => (
             <Button
               type="submit"
-              className="w-full sm:w-fit"
+              className="w-full"
               disabled={!state.canSubmit || state.isSubmitting}
             >
               {state.isSubmitting ? "Joining..." : "Join room"}
@@ -426,7 +426,7 @@ const benefits = [
         <path d="M3 8l9-6 9 6" />
       </svg>
     ),
-    color: "bg-secondary/30 text-secondary-foreground",
+    color: "bg-primary/10 text-primary",
   },
   {
     title: "Stay in sync",
@@ -469,6 +469,6 @@ const benefits = [
         <path d="M12 11h.01" />
       </svg>
     ),
-    color: "bg-accent/30 text-foreground",
+    color: "bg-primary/10 text-primary",
   },
 ];

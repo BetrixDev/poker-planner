@@ -148,7 +148,7 @@ export function RoomCard({ room }: { room: Room }) {
         </div>
       </CardContent>
 
-      <CardFooter className="flex flex-wrap gap-2">
+      <CardFooter className="flex flex-wrap gap-2 text-foreground">
         <Link className="flex-1" href={`/room/${room._id}`} prefetch="auto">
           <Button variant="default" size="sm" className="w-full">
             <ExternalLinkIcon className="h-4 w-4" />
