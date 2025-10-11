@@ -5,6 +5,21 @@ import { api } from "~/convex/_generated/api";
 import { fetchQuery } from "convex/nextjs";
 import { redirect } from "next/navigation";
 import { VotingDock } from "./(components)/voting-dock";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "~/components/ui/sidebar";
+import { RoomSidebar } from "./(components)/room-sidebar";
+import { Separator } from "~/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "~/components/ui/breadcrumb";
 
 // Temporary fake users for testing
 const FAKE_USERS: User[] = [
@@ -52,11 +67,38 @@ export default async function Page({
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-[url('/assets/room-1.jpg')] bg-repeat bg-center p-8">
-      <Table roomId={roomId} presenceId={presenceId} users={FAKE_USERS} />
-      <div className="fixed bottom-4 left-0 w-screen pointer-events-none flex items-end justify-center z-50">
-        <VotingDock />
-      </div>
-    </div>
+    <SidebarProvider>
+      <RoomSidebar />
+      <SidebarInset className="bg-[url('/assets/room-1.jpg')] bg-repeat bg-center relative">
+        <header className="absolute flex h-16 shrink-0 items-center gap-2 bg-background/75 rounded-xl rounded-b-none backdrop-blue-md w-full">
+          <div className="flex items-center gap-2 px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator
+              orientation="vertical"
+              className="mr-2 data-[orientation=vertical]:h-4"
+            />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/">Home</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/my-rooms">My Rooms</BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>Joe Room</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div>
+          <Table roomId={roomId} presenceId={presenceId} users={FAKE_USERS} />
+          <VotingDock />
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

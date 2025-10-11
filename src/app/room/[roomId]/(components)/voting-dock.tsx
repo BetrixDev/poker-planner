@@ -40,14 +40,14 @@ const DockItemComponent: React.FC<DockItemProps> = ({ item }) => {
 
   return (
     <div
-      className="relative group"
+      className="group h-full basis-full"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
         className={`
-          relative flex items-center justify-center
-          w-16 h-22 rounded-xl
+          flex items-center justify-center
+          rounded-xl h-full
           bg-white/10 backdrop-blur-[2px]
           border border-white/10
           transition-all duration-300 ease-out
@@ -87,17 +87,8 @@ const DockItemComponent: React.FC<DockItemProps> = ({ item }) => {
 
 export function VotingDock() {
   return (
-    <div className="relative pointer-events-auto">
-      <div
-        className={`
-          flex items-end gap-3 p-3
-          rounded-2xl
-          bg-background/40 backdrop-blur-xl
-          border border-white/10
-          shadow-2xl
-          transition-all duration-500 ease-out
-        `}
-      >
+    <div className="absolute bottom-4 left-0 w-full flex items-center justify-center">
+      <div className="flex gap-3 bg-background/50 backdrop-blur-xl p-3 w-[800px] h-30 rounded-xl">
         {dockItems.map((item) => (
           <DockItemComponent key={item.id} item={item} />
         ))}

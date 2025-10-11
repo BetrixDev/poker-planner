@@ -6,6 +6,8 @@ import { api } from "~/convex/_generated/api";
 import { authClient } from "~/lib/auth-client";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
+import { Spinner } from "~/components/ui/spinner";
 
 type Position =
   | "top-left"
@@ -85,18 +87,22 @@ function UserCard({ user }: UserCardProps) {
   );
 
   const hasVoted = vote !== null;
-  const card = (
+  const card = hasVoted ? (
     <Card
-      className={`w-16 h-20 rounded-lg shadow-md flex items-center justify-center transition-colors ${
+      className={`w-16 h-20 rounded-lg shadow-lg flex items-center justify-center transition-colors ${
         hasVoted
           ? "bg-primary/75 hover:bg-primary/50"
           : "bg-secondary hover:bg-secondary/80"
       }`}
     >
       <div className="text-primary-foreground text-2xl font-bold">
-        {hasVoted ? vote : "?"}
+        {hasVoted ? vote : null}
       </div>
     </Card>
+  ) : (
+    <Skeleton className="w-16 h-20 rounded-lg border flex items-center justify-center">
+      <Spinner />
+    </Skeleton>
   );
 
   // For left/right positions, use horizontal layout
@@ -177,15 +183,17 @@ export function Table({ roomId, presenceId, users }: TableProps) {
 
         {/* Center table area */}
         <div className="col-start-2 col-span-3 row-start-2 flex items-center justify-center px-12">
-          <div className="w-full max-w-md h-64 bg-[url('/assets/table-1.jpg')] bg-cover bg-center rounded-full border-8 border-secondary outline-accent shadow-xl flex items-center justify-center">
+          <div className="w-full max-w-md h-64 bg-[url('/assets/table-1.jpg')] bg-cover bg-center rounded-full border-8 border-background/50 outline-accent shadow-xl flex items-center justify-center relative z-10">
             <Button
               variant="outline"
               size="lg"
-              className="text-lg font-semibold h-12 rounded-full"
+              className="text-lg font-semibold h-12 rounded-full z-10"
             >
               Reveal cards
             </Button>
+            <div className="inset-0 absolute rounded-full [box-shadow:0_0_200px_rgba(0,0,0,1)_inset]" />
           </div>
+          <div className="w-full max-w-md h-64 bg-background absolute rounded-full scale-[101%]" />
         </div>
 
         {/* Right side user */}

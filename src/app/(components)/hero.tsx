@@ -49,7 +49,7 @@ export function Hero() {
           </div>
 
           <p className="text-sm text-muted-foreground mt-6 animate-fade-in-up animation-delay-600">
-            No account required • Free for small teams
+            Free for small teams
           </p>
         </div>
       </div>
