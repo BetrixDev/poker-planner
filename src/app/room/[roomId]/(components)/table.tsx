@@ -54,14 +54,14 @@ function UserCard({ user }: UserCardProps) {
   const { name, icon, vote, position } = user;
 
   const positionStyles = {
-    "top-left": "col-start-2 row-start-1 justify-self-center self-end",
     "top-center": "col-start-3 row-start-1 justify-self-center self-end",
-    "top-right": "col-start-4 row-start-1 justify-self-center self-end",
-    right: "col-start-5 row-start-2 justify-self-start self-center",
-    "bottom-right": "col-start-4 row-start-3 justify-self-center self-start",
     "bottom-center": "col-start-3 row-start-3 justify-self-center self-start",
-    "bottom-left": "col-start-2 row-start-3 justify-self-center self-start",
+    right: "col-start-5 row-start-2 justify-self-start self-center",
     left: "col-start-1 row-start-2 justify-self-end self-center",
+    "top-left": "col-start-2 row-start-1 justify-self-center self-end",
+    "bottom-right": "col-start-4 row-start-3 justify-self-center self-start",
+    "top-right": "col-start-4 row-start-1 justify-self-center self-end",
+    "bottom-left": "col-start-2 row-start-3 justify-self-center self-start",
   };
 
   // Determine layout direction based on position
