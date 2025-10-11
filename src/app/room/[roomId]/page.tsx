@@ -14,8 +14,12 @@ const FAKE_USERS: User[] = [
   { id: "4", name: "Alex", icon: "👨‍🔬", vote: null },
   { id: "5", name: "Sam", icon: "👩‍🎨", vote: 3 },
   { id: "6", name: "Jordan", icon: "🧑‍🎓", vote: null },
-  { id: "7", name: "Taylor", icon: "👩‍🏫", vote: 5 },
-  { id: "8", name: "Brandon", icon: "👨‍🚀", vote: 89 },
+  { id: "7", name: "Chris", icon: "🧑‍🍳", vote: 13 },
+  { id: "8", name: "Megan", icon: "👩‍🚒", vote: 2 },
+  { id: "9", name: "Liam", icon: "🧑‍🔧", vote: 0 },
+  { id: "10", name: "Olivia", icon: "👨‍🎤", vote: 21 },
+  { id: "11", name: "Noah", icon: "👩‍🚀", vote: 5 },
+  { id: "12", name: "Emma", icon: "🧑‍🔬", vote: null },
 ];
 
 export default async function Page({
@@ -48,9 +52,9 @@ export default async function Page({
   }
 
   return (
-    <div className="min-h-screen w-full flex bg-background p-8">
+    <div className="min-h-screen w-full flex bg-[url('/assets/room-1.jpg')] bg-repeat bg-center p-8">
       <Table roomId={roomId} presenceId={presenceId} users={FAKE_USERS} />
-      <div className="w-screen pointer-events-none min-h-[calc(100vh-3rem)] absolute flex items-end justify-center">
+      <div className="fixed bottom-4 left-0 w-screen pointer-events-none flex items-end justify-center z-50">
         <VotingDock />
       </div>
     </div>

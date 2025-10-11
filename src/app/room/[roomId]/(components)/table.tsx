@@ -15,19 +15,29 @@ type Position =
   | "bottom-right"
   | "bottom-center"
   | "bottom-left"
-  | "left";
+  | "left"
+  | "very-top-left"
+  | "very-top-right"
+  | "very-bottom-left"
+  | "very-bottom-right";
+
+const POSITION_STYLES: Record<Position, string> = {
+  "top-center": "col-start-3 row-start-1 justify-self-center self-end",
+  "bottom-center": "col-start-3 row-start-3 justify-self-center self-start",
+  right: "col-start-5 row-start-2 justify-self-start self-center",
+  left: "col-start-1 row-start-2 justify-self-end self-center",
+  "top-left": "col-start-2 row-start-1 justify-self-center self-end",
+  "bottom-right": "col-start-4 row-start-3 justify-self-center self-start",
+  "top-right": "col-start-4 row-start-1 justify-self-center self-end",
+  "bottom-left": "col-start-2 row-start-3 justify-self-center self-start",
+  "very-top-left": "col-start-1 row-start-1 justify-self-end self-end",
+  "very-top-right": "col-start-5 row-start-1 justify-self-start self-end",
+  "very-bottom-left": "col-start-1 row-start-3 justify-self-end self-start",
+  "very-bottom-right": "col-start-5 row-start-3 justify-self-start self-start",
+};
 
 // Positions in order around the table
-const AVAILABLE_POSITIONS: Position[] = [
-  "top-left",
-  "top-center",
-  "top-right",
-  "right",
-  "bottom-right",
-  "bottom-center",
-  "bottom-left",
-  "left",
-];
+const AVAILABLE_POSITIONS = Object.keys(POSITION_STYLES) as Position[];
 
 export type User = {
   id: string;
@@ -53,22 +63,17 @@ type UserCardProps = {
 function UserCard({ user }: UserCardProps) {
   const { name, icon, vote, position } = user;
 
-  const positionStyles = {
-    "top-center": "col-start-3 row-start-1 justify-self-center self-end",
-    "bottom-center": "col-start-3 row-start-3 justify-self-center self-start",
-    right: "col-start-5 row-start-2 justify-self-start self-center",
-    left: "col-start-1 row-start-2 justify-self-end self-center",
-    "top-left": "col-start-2 row-start-1 justify-self-center self-end",
-    "bottom-right": "col-start-4 row-start-3 justify-self-center self-start",
-    "top-right": "col-start-4 row-start-1 justify-self-center self-end",
-    "bottom-left": "col-start-2 row-start-3 justify-self-center self-start",
-  };
-
   // Determine layout direction based on position
-  const isTopPosition = position.startsWith("top");
-  const isBottomPosition = position.startsWith("bottom");
-  const isLeftPosition = position === "left";
-  const isRightPosition = position === "right";
+  const isTopPosition = position.includes("top");
+  const isBottomPosition = position.includes("bottom");
+  const isLeftPosition =
+    position === "left" ||
+    position === "very-bottom-left" ||
+    position === "very-top-left";
+  const isRightPosition =
+    position === "right" ||
+    position === "very-bottom-right" ||
+    position === "very-top-right";
 
   const userInfo = (
     <div className="flex flex-col items-center gap-1">
@@ -99,7 +104,7 @@ function UserCard({ user }: UserCardProps) {
     return (
       <div
         className={`flex items-center gap-3 ${
-          positionStyles[position as keyof typeof positionStyles]
+          POSITION_STYLES[position as keyof typeof POSITION_STYLES]
         }`}
       >
         {isLeftPosition ? (
@@ -121,7 +126,7 @@ function UserCard({ user }: UserCardProps) {
   return (
     <div
       className={`flex flex-col items-center gap-2 ${
-        positionStyles[position as keyof typeof positionStyles]
+        POSITION_STYLES[position as keyof typeof POSITION_STYLES]
       }`}
     >
       {isTopPosition ? (
@@ -151,11 +156,9 @@ export function Table({ roomId, presenceId, users }: TableProps) {
   }));
 
   // Group users by position type for rendering
-  const topUsers = usersWithPositions.filter((u) =>
-    u.position.startsWith("top")
-  );
+  const topUsers = usersWithPositions.filter((u) => u.position.includes("top"));
   const bottomUsers = usersWithPositions.filter((u) =>
-    u.position.startsWith("bottom")
+    u.position.includes("bottom")
   );
   const leftUser = usersWithPositions.find((u) => u.position === "left");
   const rightUser = usersWithPositions.find((u) => u.position === "right");
@@ -174,11 +177,11 @@ export function Table({ roomId, presenceId, users }: TableProps) {
 
         {/* Center table area */}
         <div className="col-start-2 col-span-3 row-start-2 flex items-center justify-center px-12">
-          <div className="w-full max-w-md h-64 bg-gradient-to-br from-accent/75 to-accent/50 rounded-full border-8 border-secondary outline-accent shadow-xl flex items-center justify-center">
+          <div className="w-full max-w-md h-64 bg-[url('/assets/table-1.jpg')] bg-cover bg-center rounded-full border-8 border-secondary outline-accent shadow-xl flex items-center justify-center">
             <Button
               variant="outline"
               size="lg"
-              className="text-lg font-semibold"
+              className="text-lg font-semibold h-12 rounded-full"
             >
               Reveal cards
             </Button>

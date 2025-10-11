@@ -28,7 +28,7 @@ const dockItems: DockItem[] = [
   { id: "34", label: 34 },
   { id: "55", label: 55 },
   { id: "89", label: 89 },
-  { id: "coffee", label: "☕" },
+  { id: "unsure", label: "?" },
 ];
 
 interface DockItemProps {
@@ -48,7 +48,7 @@ const DockItemComponent: React.FC<DockItemProps> = ({ item }) => {
         className={`
           relative flex items-center justify-center
           w-16 h-22 rounded-xl
-          bg-white/5 backdrop-blur-[2px]
+          bg-white/10 backdrop-blur-[2px]
           border border-white/10
           transition-all duration-300 ease-out
           cursor-pointer
@@ -92,7 +92,7 @@ export function VotingDock() {
         className={`
           flex items-end gap-3 p-3
           rounded-2xl
-          bg-black/40 backdrop-blur-xl
+          bg-background/40 backdrop-blur-xl
           border border-white/10
           shadow-2xl
           transition-all duration-500 ease-out
