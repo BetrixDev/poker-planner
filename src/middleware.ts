@@ -12,7 +12,7 @@ export function middleware(req: NextRequest) {
     return response;
   }
 
-  const uniqueId = nanoid(10);
+  const uniqueId = `anon_${nanoid(10)}`;
 
   response.cookies.set("roomPresenceId", uniqueId, {
     httpOnly: true,

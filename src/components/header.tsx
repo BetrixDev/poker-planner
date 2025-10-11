@@ -15,7 +15,48 @@ export function Header() {
   const pathname = usePathname();
 
   if (pathname.includes("/room/")) {
-    return null;
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background backdrop-blur-md border-b border-border">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="text-foreground"
+                >
+                  <rect
+                    x="4"
+                    y="8"
+                    width="10"
+                    height="14"
+                    rx="2"
+                    fill="currentColor"
+                  />
+                  <rect
+                    x="18"
+                    y="8"
+                    width="10"
+                    height="14"
+                    rx="2"
+                    fill="currentColor"
+                  />
+                  <circle cx="9" cy="13" r="1.5" fill="white" />
+                  <circle cx="23" cy="13" r="1.5" fill="white" />
+                </svg>
+                <span className="text-xl md:text-2xl font-semibold tracking-tight">
+                  Poker Planner
+                </span>
+              </div>
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
   }
 
   return (
