@@ -44,7 +44,6 @@ type Room = {
   code: string;
   password?: string;
   name: string;
-  facilitatorIds: string[];
   ownerId: string;
   status: "votingActive" | "votesRevealed";
   currentIssueId?: Id<"issues">;
@@ -52,7 +51,9 @@ type Room = {
   users: Array<{
     presenceId: string;
     displayName: string;
-    isSpectator: boolean;
+    role: "facilitator" | "user" | "spectator";
+    profileImage: string;
+    userId?: string;
   }>;
 };
 

@@ -6,22 +6,27 @@ export default defineSchema({
     code: v.string(),
     password: v.optional(v.string()),
     name: v.string(),
-    facilitatorIds: v.array(v.string()),
     ownerId: v.string(),
     status: v.union(v.literal("votingActive"), v.literal("votesRevealed")),
     currentIssueId: v.optional(v.id("issues")),
     settings: v.object({}),
     users: v.array(
       v.object({
+        userId: v.optional(v.string()),
         presenceId: v.string(),
         displayName: v.string(),
-        isSpectator: v.boolean(),
+        role: v.union(
+          v.literal("facilitator"),
+          v.literal("user"),
+          v.literal("spectator")
+        ),
+        profileImage: v.string(),
       })
     ),
   })
     .index("by_code", ["code"])
-    .index("by_facilitators", ["facilitatorIds"])
-    .index("by_owner", ["ownerId"]),
+    .index("by_owner", ["ownerId"])
+    .index("by_users", ["users"]),
 
   inviteLinks: defineTable({
     roomId: v.id("rooms"),

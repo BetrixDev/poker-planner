@@ -10,7 +10,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "~/components/ui/sidebar";
-import { RoomSidebar } from "./(components)/room-sidebar";
+import { RoomSidebar } from "./(components)/sidebar/room-sidebar";
 import { Separator } from "~/components/ui/separator";
 import {
   Breadcrumb,
@@ -68,7 +68,7 @@ export default async function Page({
 
   return (
     <SidebarProvider>
-      <RoomSidebar />
+      <RoomSidebar presenceId={presenceId} />
       <SidebarInset className="bg-[url('/assets/room-1.jpg')] bg-repeat bg-center relative">
         <header className="absolute flex h-16 shrink-0 items-center gap-2 bg-background/75 rounded-xl rounded-b-none backdrop-blue-md w-full">
           <div className="flex items-center gap-2 px-4">

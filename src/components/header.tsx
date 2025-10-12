@@ -10,6 +10,7 @@ import {
   UserButton,
   UserAvatar,
 } from "@daveyplate/better-auth-ui";
+import { Logo } from "./logo";
 
 export function Header() {
   const pathname = usePathname();
@@ -24,33 +25,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center gap-2">
-              <svg
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="text-foreground"
-              >
-                <rect
-                  x="4"
-                  y="10"
-                  width="10"
-                  height="14"
-                  rx="2"
-                  fill="currentColor"
-                />
-                <rect
-                  x="18"
-                  y="10"
-                  width="10"
-                  height="14"
-                  rx="2"
-                  fill="currentColor"
-                />
-                <circle cx="9" cy="13" r="1.5" fill="white" />
-                <circle cx="23" cy="13" r="1.5" fill="white" />
-              </svg>
+              <Logo />
               <span className="text-xl md:text-2xl font-semibold tracking-tight">
                 Poker Planner
               </span>
