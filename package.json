@@ -23,11 +23,7 @@
     "dev:server": "turbo -F @poker-planner/backend dev",
     "dev:setup": "turbo -F @poker-planner/backend dev:setup"
   },
-  "dependencies": {
-    "@trigger.dev/sdk": "4.0.4"
-  },
   "devDependencies": {
-    "@trigger.dev/build": "4.0.4",
     "turbo": "^2.5.4"
   },
   "packageManager": "bun@1.2.22"
