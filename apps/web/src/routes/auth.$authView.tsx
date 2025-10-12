@@ -1,4 +1,3 @@
-import { cn } from "~/lib/utils";
 import { AuthView } from "@daveyplate/better-auth-ui";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -11,7 +10,7 @@ function RouteComponent() {
 
   return (
     <main className="h-screen flex items-center justify-center w-screen">
-      <div className="w-[500px]">
+      <div className="w-full flex items-center justify-center">
         <AuthView pathname={authView} />
       </div>
     </main>
