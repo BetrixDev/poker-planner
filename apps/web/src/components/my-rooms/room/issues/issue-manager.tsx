@@ -11,7 +11,6 @@ import {
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -27,7 +26,6 @@ import {
   ListIcon,
   Trash2Icon,
   PencilIcon,
-  CheckCircle2Icon,
   CircleIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -36,6 +34,7 @@ import { convexQuery } from "@convex-dev/react-query";
 import { Route } from "~/routes/my-rooms_.$roomId.issues";
 import { Link } from "@tanstack/react-router";
 import { RainbowButton } from "~/components/ui/rainbow-button";
+import { IngestIssuesDialog } from "~/components/dialogs/ingest-issues-dialog";
 
 export function IssueManager() {
   const { roomId } = Route.useParams();
@@ -59,6 +58,12 @@ export function IssueManager() {
   const createIssue = useMutation(api.issues.createIssue);
   const updateIssue = useMutation(api.issues.updateIssue);
   const deleteIssue = useMutation(api.issues.deleteIssue);
+
+  const { data: ingestions } = useQuery(
+    convexQuery(api.issueIngestion.getIngestionsByRoom, {
+      roomId: roomId as Id<"rooms">,
+    })
+  );
 
   if (!room) {
     return (
@@ -169,31 +174,15 @@ export function IssueManager() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Dialog>
-                <DialogTrigger asChild>
+              <IngestIssuesDialog
+                roomId={room._id}
+                dialogTrigger={
                   <RainbowButton className="gap-2 shadow-lg hover:shadow-xl transition-all">
                     <PlusIcon className="h-5 w-5" />
                     AI Issue Ingestion
                   </RainbowButton>
-                </DialogTrigger>
-                <DialogContent className="max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>AI Issue Ingestion</DialogTitle>
-                    <DialogDescription>
-                      Upload a screenshot of your issues from any provider and
-                      we'll parse them for you.
-                    </DialogDescription>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="outline">Cancel</Button>
-                      </DialogClose>
-                      <DialogClose asChild>
-                        <Button>Begin Ingestion</Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
+                }
+              />
               <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                 <DialogTrigger asChild>
                   <Button
@@ -257,6 +246,12 @@ export function IssueManager() {
           </div>
         </div>
 
+        <div>
+          {ingestions?.map((ingestion) => (
+            <div key={ingestion._id}>{ingestion.status.type}</div>
+          ))}
+        </div>
+
         {/* Issues List */}
         {sortedIssues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-4">
@@ -286,11 +281,7 @@ export function IssueManager() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-3 flex-1">
-                      {issue.isCompleted ? (
-                        <CheckCircle2Icon className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
-                      ) : (
-                        <CircleIcon className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
-                      )}
+                      <CircleIcon className="h-5 w-5 text-muted-foreground mt-0.5 shrink-0" />
                       <div className="flex-1">
                         <CardTitle className="text-lg">{issue.title}</CardTitle>
                         {issue.description && (

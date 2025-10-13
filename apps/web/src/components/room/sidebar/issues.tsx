@@ -3,7 +3,6 @@ import { api } from "@poker-planner/backend/convex/_generated/api";
 import type { Id } from "@poker-planner/backend/convex/_generated/dataModel";
 import { useForm } from "@tanstack/react-form";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
 import { ConvexError } from "convex/values";
 import {
   PlusIcon,
@@ -11,14 +10,9 @@ import {
   ListTodoIcon,
   PencilLineIcon,
 } from "lucide-react";
-import { useState } from "react";
 import { toast } from "sonner";
 import { z } from "zod";
-import {
-  Dropzone,
-  DropzoneContent,
-  DropzoneEmptyState,
-} from "~/components/kibo-ui/dropzone";
+import { IngestIssuesDialog } from "~/components/dialogs/ingest-issues-dialog";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -61,14 +55,8 @@ export function Issues() {
         <AddIssueDialogContent roomId={roomId as Id<"rooms">} />
       </Dialog>
       <SidebarGroupContent className="space-y-2">
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="w-full rounded-full" variant="outline" size="sm">
-              AI Issue Ingestion
-            </Button>
-          </DialogTrigger>
-          <IngestIssuesDialogContent roomId={roomId as Id<"rooms">} />
-        </Dialog>
+        <IngestIssuesDialog roomId={roomId as Id<"rooms">} />
+        <IngestionTracker roomId={roomId as Id<"rooms">} />
         {sortedIssues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
             <div className="rounded-full bg-muted p-3 mb-3">
@@ -148,57 +136,21 @@ export function Issues() {
   );
 }
 
-type IngestIssuesDialogContentProps = {
+type IngestionTrackerProps = {
   roomId: Id<"rooms">;
 };
 
-function IngestIssuesDialogContent({ roomId }: IngestIssuesDialogContentProps) {
-  const [files, setFiles] = useState<File[] | undefined>();
-
-  const handleDrop = (files: File[]) => {
-    setFiles(files);
-  };
+function IngestionTracker({ roomId }: IngestionTrackerProps) {
+  const { data } = useQuery(
+    convexQuery(api.issueIngestion.getIngestionsByRoom, { roomId: roomId })
+  );
 
   return (
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>Ingest Issues</DialogTitle>
-        <DialogDescription>
-          <div>
-            Upload a screenshot of your issues from any provider and we'll parse
-            them for you.
-          </div>
-          <div>Any issues found will be added to the issue list.</div>
-        </DialogDescription>
-      </DialogHeader>
-      <Dropzone
-        accept={{ "image/*": [] }}
-        maxFiles={10}
-        maxSize={1024 * 1024 * 10}
-        minSize={1024}
-        onDrop={handleDrop}
-        onError={console.error}
-        src={files}
-      >
-        <DropzoneEmptyState />
-        <DropzoneContent />
-      </Dropzone>
-      <p className="text-xs text-muted-foreground">
-        By clicking "Begin Ingestion", you agree to the{" "}
-        <Link to="/terms">Terms of Service</Link> and{" "}
-        <Link to="/privacy">Privacy Policy</Link>.
-      </p>
-      <DialogFooter>
-        <DialogClose asChild>
-          <Button variant="outline" onClick={() => setFiles(undefined)}>
-            Cancel
-          </Button>
-        </DialogClose>
-        <DialogClose asChild>
-          <Button>Begin Ingestion</Button>
-        </DialogClose>
-      </DialogFooter>
-    </DialogContent>
+    <div>
+      {data?.map((ingestion) => (
+        <div key={ingestion._id}>{ingestion.status.type}</div>
+      ))}
+    </div>
   );
 }
 

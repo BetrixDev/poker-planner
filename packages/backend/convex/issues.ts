@@ -40,7 +40,6 @@ export const createIssue = mutation({
       title: args.title,
       description: args.description,
       order: maxOrder + 1,
-      isCompleted: false,
     });
   },
 });

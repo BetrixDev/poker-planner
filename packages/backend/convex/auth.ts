@@ -40,3 +40,10 @@ export const getCurrentUser = query({
     return authComponent.getAuthUser(ctx as any);
   },
 });
+
+export const getCurrentUserOrNull = query({
+  args: {},
+  handler: async (ctx) => {
+    return authComponent.safeGetAuthUser(ctx as any);
+  },
+});

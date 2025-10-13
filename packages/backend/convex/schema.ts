@@ -50,14 +50,31 @@ export default defineSchema({
 
   issues: defineTable({
     roomId: v.id("rooms"),
-    sprintId: v.optional(v.id("sprints")),
     title: v.string(),
     description: v.optional(v.string()),
     order: v.number(),
-    isCompleted: v.boolean(),
     finalEstimate: v.optional(v.string()),
   })
     .index("by_room", ["roomId"])
-    .index("by_room_and_order", ["roomId", "order"])
-    .index("by_room_and_sprint", ["roomId", "sprintId"]),
+    .index("by_room_and_order", ["roomId", "order"]),
+
+  issueIngestions: defineTable({
+    roomId: v.id("rooms"),
+    uploadedBy: v.string(),
+    imageid: v.id("_storage"),
+    status: v.union(
+      v.object({
+        type: v.literal("processing"),
+      }),
+      v.object({
+        type: v.literal("failed"),
+      }),
+      v.object({
+        type: v.literal("completed"),
+        issuesFound: v.number(),
+      })
+    ),
+  })
+    .index("by_room", ["roomId"])
+    .index("by_uploadedBy", ["uploadedBy"]),
 });
