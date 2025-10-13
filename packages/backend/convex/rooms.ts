@@ -44,7 +44,6 @@ export const createRoom = mutation({
       name: args.name,
       password: args.password,
       status: "votingActive",
-      currentIssueId: undefined,
       settings: {},
       ownerId: user.subject,
       code,
@@ -89,24 +88,23 @@ export const getRoomById = query({
   handler: async (ctx, args) => {
     const room = await ctx.db.get(args.id);
 
-    const roomIssues = await ctx.db
-      .query("issues")
-      .withIndex("by_room", (q) => q.eq("roomId", args.id))
-      .collect();
-
-    const roomVotes = await ctx.db
-      .query("votes")
-      .withIndex("by_room", (q) => q.eq("roomId", args.id))
-      .collect();
-
     if (!room) {
       throw new ConvexError("Room not found");
     }
 
+    const roomIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .collect();
+
+    const selectedIssue = room.selectedIssueId
+      ? await ctx.db.get(room.selectedIssueId)
+      : null;
+
     return {
       room,
       issues: roomIssues,
-      votes: roomVotes,
+      selectedIssue,
     };
   },
 });
@@ -209,16 +207,6 @@ export const deleteRoom = mutation({
       await ctx.db.delete(issue._id);
     }
 
-    // Delete all votes associated with the room
-    const votes = await ctx.db
-      .query("votes")
-      .withIndex("by_room", (q) => q.eq("roomId", args.id))
-      .collect();
-
-    for (const vote of votes) {
-      await ctx.db.delete(vote._id);
-    }
-
     await ctx.db.delete(args.id);
     return null;
   },
@@ -266,5 +254,61 @@ export const renameRoom = mutation({
 
     await ctx.db.patch(args.id, { name: args.name });
     return null;
+  },
+});
+
+export const selectIssueInRoom = mutation({
+  args: {
+    id: v.id("issues"),
+    roomId: v.id("rooms"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+
+    if (!identity) {
+      throw new ConvexError("Unauthorized");
+    }
+
+    const room = await ctx.db.get(args.roomId);
+
+    if (!room) {
+      throw new ConvexError("Room not found");
+    }
+
+    if (
+      room.users.find((user) => user.userId === identity.subject)?.role !==
+      "facilitator"
+    ) {
+      throw new ConvexError("You must be a facilitator to start a vote");
+    }
+
+    const issue = await ctx.db.get(args.id);
+
+    if (!issue) {
+      throw new ConvexError("Issue not found");
+    }
+
+    if (issue.roomId !== args.roomId) {
+      throw new ConvexError("Issue does not belong to this room");
+    }
+
+    const otherRoomIssues = await ctx.db
+      .query("issues")
+      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
+      .collect();
+
+    for (const otherIssue of otherRoomIssues) {
+      await ctx.db.patch(otherIssue._id, {
+        status: { type: "pendingVote" },
+      });
+    }
+
+    await ctx.db.patch(args.id, {
+      status: { type: "roomSelectedIssue" },
+    });
+
+    await ctx.db.patch(args.roomId, {
+      selectedIssueId: args.id,
+    });
   },
 });

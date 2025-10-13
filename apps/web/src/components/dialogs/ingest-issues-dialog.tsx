@@ -1,4 +1,4 @@
-import { useConvexMutation } from "@convex-dev/react-query";
+import { convexQuery, useConvexMutation } from "@convex-dev/react-query";
 import { api } from "@poker-planner/backend/convex/_generated/api";
 import type { Id } from "@poker-planner/backend/convex/_generated/dataModel";
 import {
@@ -9,8 +9,8 @@ import {
   DialogDescription,
   DialogClose,
 } from "~/components/ui/dialog";
-import { useMutation } from "@tanstack/react-query";
-import { ClipboardCheckIcon } from "lucide-react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { CheckIcon, ClipboardCheckIcon, XIcon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -21,6 +21,8 @@ import {
 } from "../kibo-ui/dropzone";
 import { Button } from "../ui/button";
 import { DialogHeader, DialogFooter } from "../ui/dialog";
+import { Spinner } from "../ui/spinner";
+import { cn } from "~/lib/utils";
 
 type IngestIssuesDialogContentProps = {
   roomId: Id<"rooms">;
@@ -37,6 +39,26 @@ export function IngestIssuesDialog({
   const { mutateAsync: createIssueIngestion } = useMutation({
     mutationFn: useConvexMutation(api.issueIngestion.createIssueIngestion),
   });
+
+  const { data: ingestionData } = useQuery(
+    convexQuery(api.issueIngestion.getIngestionsByRoom, {
+      roomId,
+    })
+  );
+
+  const hasIngestionInProgress = (ingestionData?.length ?? 0) > 0;
+
+  const hasIngestionProcessing = ingestionData?.some(
+    (ingestion) => ingestion.status.type === "processing"
+  );
+
+  const hasIngestionFailed = ingestionData?.some(
+    (ingestion) => ingestion.status.type === "failed"
+  );
+
+  const hasIngestionCompleted = ingestionData?.some(
+    (ingestion) => ingestion.status.type === "completed"
+  );
 
   const [image, setImage] = useState<File | undefined>();
 
@@ -103,8 +125,27 @@ export function IngestIssuesDialog({
     <Dialog>
       <DialogTrigger asChild>
         {dialogTrigger ?? (
-          <Button className="w-full rounded-full" variant="outline" size="sm">
-            AI Issue Ingestion
+          <Button
+            className="w-full rounded-full"
+            variant="outline"
+            size="sm"
+            disabled={hasIngestionInProgress}
+          >
+            {hasIngestionProcessing ? (
+              <>
+                <Spinner /> Processing issues...
+              </>
+            ) : hasIngestionFailed ? (
+              <>
+                <XIcon /> Ingestion failed
+              </>
+            ) : hasIngestionCompleted ? (
+              <>
+                <CheckIcon /> Ingestion completed
+              </>
+            ) : (
+              "AI Issue Ingestion"
+            )}
           </Button>
         )}
       </DialogTrigger>

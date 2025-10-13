@@ -119,6 +119,9 @@ export const addExtractedIssues = internalMutation({
         title: issue.title,
         description: issue.description,
         order: 0,
+        status: {
+          type: "pendingVote",
+        },
       });
     }
   },

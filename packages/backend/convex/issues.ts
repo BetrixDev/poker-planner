@@ -40,6 +40,9 @@ export const createIssue = mutation({
       title: args.title,
       description: args.description,
       order: maxOrder + 1,
+      status: {
+        type: "pendingVote",
+      },
     });
   },
 });
@@ -49,6 +52,7 @@ export const updateIssue = mutation({
     id: v.id("issues"),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
+    link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -76,6 +80,7 @@ export const updateIssue = mutation({
     const updates: any = {};
     if (args.title !== undefined) updates.title = args.title;
     if (args.description !== undefined) updates.description = args.description;
+    if (args.link !== undefined) updates.link = args.link;
 
     await ctx.db.patch(args.id, updates);
     return null;

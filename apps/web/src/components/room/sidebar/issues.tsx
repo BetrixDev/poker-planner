@@ -9,6 +9,7 @@ import {
   Trash2Icon,
   ListTodoIcon,
   PencilLineIcon,
+  ArrowRightIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -41,6 +42,14 @@ export function Issues() {
     convexQuery(api.issues.getIssues, { roomId: roomId as Id<"rooms"> })
   );
 
+  const { data: roomData } = useQuery(
+    convexQuery(api.rooms.getRoomById, { id: roomId as Id<"rooms"> })
+  );
+
+  const { mutate: selectIssueInRoom } = useMutation({
+    mutationFn: useConvexMutation(api.rooms.selectIssueInRoom),
+  });
+
   const sortedIssues = data?.sort((a, b) => a.order - b.order) || [];
 
   return (
@@ -56,7 +65,6 @@ export function Issues() {
       </Dialog>
       <SidebarGroupContent className="space-y-2">
         <IngestIssuesDialog roomId={roomId as Id<"rooms">} />
-        <IngestionTracker roomId={roomId as Id<"rooms">} />
         {sortedIssues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
             <div className="rounded-full bg-muted p-3 mb-3">
@@ -70,19 +78,13 @@ export function Issues() {
             </p>
           </div>
         ) : (
-          sortedIssues.map((issue, index) => {
+          sortedIssues.map((issue) => {
             return (
               <div
                 key={issue._id}
-                className="group relative rounded-lg border bg-card p-3 transition-all hover:shadow-md hover:border-primary/50"
+                className="group relative rounded-lg border bg-card p-3 transition-all hover:shadow-md hover:border-primary/50 flex flex-col gap-2"
               >
-                <div className="flex items-start gap-3">
-                  {/* Issue Number Badge */}
-                  <div className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                    {index + 1}
-                  </div>
-
-                  {/* Issue Content */}
+                <div className="flex items-start gap-">
                   <div className="flex-1 min-w-0">
                     <h3 className="text-sm font-semibold text-foreground leading-snug mb-1 break-words">
                       {issue.title}
@@ -127,30 +129,45 @@ export function Issues() {
                     </Dialog>
                   </div>
                 </div>
+                <div className="flex items-center justify-between gap-2">
+                  <Button
+                    size="xs"
+                    variant="outline"
+                    disabled={roomData?.selectedIssue?._id === issue._id}
+                    onClick={() =>
+                      selectIssueInRoom({
+                        id: issue._id,
+                        roomId: roomId as Id<"rooms">,
+                      })
+                    }
+                  >
+                    Select Issue <ArrowRightIcon className="h-3.5 w-3.5" />
+                  </Button>
+                  <div className="grow h-7 border bg-background shadow-xs dark:bg-input/30 dark:border-input rounded-md flex items-center justify-start px-2">
+                    {issue.status.type === "pendingVote" ? (
+                      <span className="text-xs text-muted-foreground">
+                        Pending Vote
+                      </span>
+                    ) : issue.status.type === "roomSelectedIssue" ? (
+                      <span className="text-xs text-muted-foreground animate-pulse">
+                        Currently Selected...
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">
+                        Estimated:{" "}
+                        <span className="font-medium">
+                          {issue.status.estimate}
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
             );
           })
         )}
       </SidebarGroupContent>
     </SidebarGroup>
-  );
-}
-
-type IngestionTrackerProps = {
-  roomId: Id<"rooms">;
-};
-
-function IngestionTracker({ roomId }: IngestionTrackerProps) {
-  const { data } = useQuery(
-    convexQuery(api.issueIngestion.getIngestionsByRoom, { roomId: roomId })
-  );
-
-  return (
-    <div>
-      {data?.map((ingestion) => (
-        <div key={ingestion._id}>{ingestion.status.type}</div>
-      ))}
-    </div>
   );
 }
 

@@ -8,8 +8,8 @@ export default defineSchema({
     name: v.string(),
     ownerId: v.string(),
     status: v.union(v.literal("votingActive"), v.literal("votesRevealed")),
-    currentIssueId: v.optional(v.id("issues")),
     settings: v.object({}),
+    selectedIssueId: v.optional(v.id("issues")),
     users: v.array(
       v.object({
         userId: v.optional(v.string()),
@@ -21,6 +21,7 @@ export default defineSchema({
           v.literal("spectator")
         ),
         profileImage: v.string(),
+        currentVote: v.optional(v.number()),
       })
     ),
   })
@@ -37,23 +38,24 @@ export default defineSchema({
     .index("by_room", ["roomId"])
     .index("by_link", ["link"]),
 
-  votes: defineTable({
-    roomId: v.id("rooms"),
-    userId: v.string(),
-    issueId: v.optional(v.id("issues")),
-    value: v.number(),
-    votedAt: v.number(),
-  })
-    .index("by_room", ["roomId"])
-    .index("by_room_and_issue", ["roomId", "issueId"])
-    .index("by_room_and_user", ["roomId", "userId"]),
-
   issues: defineTable({
     roomId: v.id("rooms"),
     title: v.string(),
     description: v.optional(v.string()),
+    link: v.optional(v.string()),
     order: v.number(),
-    finalEstimate: v.optional(v.string()),
+    status: v.union(
+      v.object({
+        type: v.literal("pendingVote"),
+      }),
+      v.object({
+        type: v.literal("roomSelectedIssue"),
+      }),
+      v.object({
+        type: v.literal("voted"),
+        estimate: v.number(),
+      })
+    ),
   })
     .index("by_room", ["roomId"])
     .index("by_room_and_order", ["roomId", "order"]),

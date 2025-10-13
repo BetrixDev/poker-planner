@@ -13,7 +13,7 @@ import appCss from "../index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import type { ConvexQueryClient } from "@convex-dev/react-query";
 import type { ConvexReactClient } from "convex/react";
-
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequest, getCookie } from "@tanstack/react-start/server";
 import { ConvexBetterAuthProvider } from "@convex-dev/better-auth/react";
@@ -92,6 +92,7 @@ function RootDocument() {
           </AuthProviders>
           <Toaster richColors />
           <TanStackRouterDevtools position="bottom-left" />
+          <ReactQueryDevtools />
           <Scripts />
         </body>
       </html>

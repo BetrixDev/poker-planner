@@ -11,7 +11,6 @@ import {
 } from "~/components/ui/sidebar";
 import { Logo } from "~/components/logo";
 import { Issues } from "./issues";
-import { VoteHistory } from "./vote-history";
 import { Facilitators } from "./facilitators";
 import { Users } from "./users";
 import { Link } from "@tanstack/react-router";
@@ -42,7 +41,6 @@ export function RoomSidebar({ ...props }: RoomSidebarProps) {
       </SidebarHeader>
       <SidebarContent>
         <Issues />
-        <VoteHistory />
         <SidebarSeparator />
         {presenceId && <Facilitators presenceId={presenceId} />}
         {presenceId && <Users presenceId={presenceId} />}
