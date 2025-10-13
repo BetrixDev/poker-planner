@@ -166,7 +166,7 @@ export function IngestIssuesDialog({
         <Dropzone
           accept={{ "image/*": [] }}
           maxFiles={10}
-          maxSize={1024 * 1024 * 10}
+          maxSize={1024 * 1024 * 8}
           minSize={1024}
           onDrop={handleDrop}
           onError={console.error}
