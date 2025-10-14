@@ -119,7 +119,7 @@ export const deleteIssue = mutation({
   },
 });
 
-export const getIssues = query({
+export const getIssuesByRoom = query({
   args: {
     roomId: v.id("rooms"),
   },

@@ -43,7 +43,7 @@ const AVAILABLE_POSITIONS = Object.keys(POSITION_STYLES) as Position[];
 export type User = {
   id: string;
   name: string;
-  icon: ReactNode;
+  profileImage: string;
   vote: number | null;
 };
 
@@ -56,7 +56,7 @@ type UserCardProps = {
 };
 
 function UserCard({ user }: UserCardProps) {
-  const { name, icon, vote, position } = user;
+  const { name, profileImage, vote, position } = user;
 
   // Determine layout direction based on position
   const isTopPosition = position.includes("top");
@@ -71,9 +71,10 @@ function UserCard({ user }: UserCardProps) {
 
   const userInfo = (
     <div className="flex flex-col items-center gap-1">
-      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/75 to-primary/50 flex items-center justify-center text-2xl shadow-md">
-        {icon}
-      </div>
+      <img
+        src={profileImage}
+        className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/75 to-primary/50 flex items-center justify-center text-2xl shadow-md"
+      />
       <span className="text-sm font-medium text-foreground">{name}</span>
     </div>
   );
@@ -142,22 +143,6 @@ function UserCard({ user }: UserCardProps) {
   );
 }
 
-// User avatars/icons for display
-const USER_ICONS = [
-  "🧑‍💼",
-  "👩‍💻",
-  "👨‍💼",
-  "👨‍🔬",
-  "👩‍🎨",
-  "🧑‍🎓",
-  "🧑‍🍳",
-  "👩‍🚒",
-  "👨‍🚀",
-  "👩‍🏫",
-  "🧑‍⚕️",
-  "👨‍🌾",
-];
-
 export function Room() {
   const { roomId } = Route.useParams();
 
@@ -191,7 +176,7 @@ export function Room() {
 
       return true;
     })
-    .map((presenceUser, index) => {
+    .map((presenceUser) => {
       const roomUser = roomData?.room?.users?.find(
         (u) => u.presenceId === presenceUser.userId
       );
@@ -199,7 +184,7 @@ export function Room() {
       return {
         id: presenceUser.userId,
         name: presenceUser.displayName,
-        icon: USER_ICONS[index % USER_ICONS.length],
+        profileImage: presenceUser.profileImage,
         vote: roomUser?.currentVote ?? null,
       };
     });
