@@ -1,8 +1,7 @@
 import { ConvexError, v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
-import { Id } from "./_generated/dataModel";
-import { authComponent } from "./auth";
+import { mutation, query } from "./_generated/server";
 import { getDefaultUserProfileImage } from "./utils";
+import { presence } from "./presence";
 
 // Generate a unique 6-character room code
 function generateRoomCode(): string {
@@ -115,73 +114,6 @@ export const getRoomById = query({
   },
 });
 
-export const getRoomUsers = query({
-  args: {
-    roomId: v.id("rooms"),
-  },
-  handler: async (ctx, args) => {
-    const roomData = await ctx.db.get(args.roomId);
-
-    if (!roomData) {
-      throw new ConvexError("Room not found");
-    }
-
-    const authedUsers = await Promise.all(
-      roomData.users.map((user) => {
-        if (!user.userId) {
-          return null;
-        }
-
-        return authComponent.getAnyUserById(
-          ctx as any,
-          user.userId ?? user.presenceId
-        );
-      })
-    );
-
-    return roomData.users.map((user) => {
-      const authedUser = authedUsers.find(
-        (authedUser) => authedUser?._id === user.userId
-      );
-
-      return {
-        id: user.presenceId,
-        username:
-          authedUser?.name ??
-          authedUser?.displayUsername ??
-          authedUser?.username ??
-          authedUser?.email ??
-          "Anonymous",
-        role: user.role,
-      };
-    });
-  },
-});
-
-export const getRoomByInviteCode = query({
-  args: {
-    code: v.string(),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("rooms")
-      .withIndex("by_code", (q) => q.eq("code", args.code))
-      .first();
-  },
-});
-
-export const getRoomIssues = query({
-  args: {
-    roomId: v.id("rooms"),
-  },
-  handler: async (ctx, args) => {
-    return await ctx.db
-      .query("issues")
-      .withIndex("by_room", (q) => q.eq("roomId", args.roomId))
-      .collect();
-  },
-});
-
 export const deleteRoom = mutation({
   args: {
     id: v.id("rooms"),
@@ -214,6 +146,9 @@ export const deleteRoom = mutation({
     }
 
     await ctx.db.delete(args.id);
+
+    await presence.removeRoom(ctx, args.id);
+
     return null;
   },
 });

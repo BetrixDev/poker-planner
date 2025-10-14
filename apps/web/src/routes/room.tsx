@@ -147,15 +147,6 @@ function RouteComponent() {
             </div>
           ))}
         </div>
-
-        <div className="mx-auto mt-12 flex max-w-4xl flex-col items-center gap-4 rounded-2xl border border-dashed border-border/70 bg-muted/20 px-6 py-8 text-center">
-          <p className="text-base font-medium text-muted-foreground">
-            Have an invite link instead?
-          </p>
-          <Button variant="outline" className="gap-2" disabled>
-            Paste invite code URL
-          </Button>
-        </div>
       </div>
     </main>
   );

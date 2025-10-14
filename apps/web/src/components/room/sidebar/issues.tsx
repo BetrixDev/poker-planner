@@ -27,6 +27,7 @@ import {
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { ScrollArea } from "~/components/ui/scroll-area";
 import {
   SidebarGroup,
   SidebarGroupAction,
@@ -34,12 +35,13 @@ import {
   SidebarGroupLabel,
 } from "~/components/ui/sidebar";
 import { Route } from "~/routes/room_.$roomId";
+import { cn } from "../../../lib/utils";
 
 export function Issues() {
   const { roomId } = Route.useParams();
 
   const { data } = useQuery(
-    convexQuery(api.issues.getIssues, { roomId: roomId as Id<"rooms"> })
+    convexQuery(api.issues.getIssuesByRoom, { roomId: roomId as Id<"rooms"> })
   );
 
   const { data: roomData } = useQuery(
@@ -63,7 +65,7 @@ export function Issues() {
         </DialogTrigger>
         <AddIssueDialogContent roomId={roomId as Id<"rooms">} />
       </Dialog>
-      <SidebarGroupContent className="space-y-2">
+      <SidebarGroupContent>
         <IngestIssuesDialog roomId={roomId as Id<"rooms">} />
         {sortedIssues.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
@@ -74,97 +76,102 @@ export function Issues() {
               No issues yet
             </p>
             <p className="text-xs text-muted-foreground mt-1">
-              Add your first issue to get started
+              Issues can help you keep voting organized
             </p>
           </div>
         ) : (
-          sortedIssues.map((issue) => {
-            return (
-              <div
-                key={issue._id}
-                className="group relative rounded-lg border bg-card p-3 transition-all hover:shadow-md hover:border-primary/50 flex flex-col gap-2"
-              >
-                <div className="flex items-start gap-">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-foreground leading-snug mb-1 break-words">
-                      {issue.title}
-                    </h3>
-                    {issue.description && (
-                      <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
-                        {issue.description}
-                      </p>
-                    )}
+          <ScrollArea className="h-64">
+            {sortedIssues.map((issue) => {
+              return (
+                <div
+                  key={issue._id}
+                  className={cn(
+                    "group relative rounded-lg border bg-card p-3 transition-all hover:shadow-md hover:border-primary/50 flex flex-col gap-2 mt-2",
+                    sortedIssues.length > 2 && "mr-3"
+                  )}
+                >
+                  <div className="flex items-start gap-">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-foreground leading-snug mb-1 break-words">
+                        {issue.title}
+                      </h3>
+                      {issue.description && (
+                        <p className="text-xs text-muted-foreground leading-relaxed line-clamp-2">
+                          {issue.description}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex-shrink-0 flex items-center gap-1">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 hover:bg-primary/10 hover:text-primary"
+                          >
+                            <PencilLineIcon className="h-3.5 w-3.5" />
+                          </Button>
+                        </DialogTrigger>
+                        <EditIssueDialogContent
+                          issueId={issue._id}
+                          issueTitle={issue.title}
+                          issueDescription={issue.description || ""}
+                        />
+                      </Dialog>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            size="icon-sm"
+                            variant="ghost"
+                            className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 hover:bg-destructive/10 hover:text-destructive"
+                          >
+                            <Trash2Icon className="h-3.5 w-3.5" />
+                          </Button>
+                        </DialogTrigger>
+                        <DeleteIssueDialogContent
+                          issueTitle={issue.title}
+                          issueId={issue._id}
+                        />
+                      </Dialog>
+                    </div>
                   </div>
-                  <div className="flex-shrink-0 flex items-center gap-1">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="icon-sm"
-                          variant="ghost"
-                          className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 hover:bg-primary/10 hover:text-primary"
-                        >
-                          <PencilLineIcon className="h-3.5 w-3.5" />
-                        </Button>
-                      </DialogTrigger>
-                      <EditIssueDialogContent
-                        issueId={issue._id}
-                        issueTitle={issue.title}
-                        issueDescription={issue.description || ""}
-                      />
-                    </Dialog>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button
-                          size="icon-sm"
-                          variant="ghost"
-                          className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 hover:bg-destructive/10 hover:text-destructive"
-                        >
-                          <Trash2Icon className="h-3.5 w-3.5" />
-                        </Button>
-                      </DialogTrigger>
-                      <DeleteIssueDialogContent
-                        issueTitle={issue.title}
-                        issueId={issue._id}
-                      />
-                    </Dialog>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <Button
-                    size="xs"
-                    variant="outline"
-                    disabled={roomData?.selectedIssue?._id === issue._id}
-                    onClick={() =>
-                      selectIssueInRoom({
-                        id: issue._id,
-                        roomId: roomId as Id<"rooms">,
-                      })
-                    }
-                  >
-                    Select Issue <ArrowRightIcon className="h-3.5 w-3.5" />
-                  </Button>
-                  <div className="grow h-7 border bg-background shadow-xs dark:bg-input/30 dark:border-input rounded-md flex items-center justify-start px-2">
-                    {issue.status.type === "pendingVote" ? (
-                      <span className="text-xs text-muted-foreground">
-                        Pending Vote
-                      </span>
-                    ) : issue.status.type === "roomSelectedIssue" ? (
-                      <span className="text-xs text-muted-foreground animate-pulse">
-                        Currently Selected...
-                      </span>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">
-                        Estimated:{" "}
-                        <span className="font-medium">
-                          {issue.status.estimate}
+                  <div className="flex items-center justify-between gap-2">
+                    <Button
+                      size="xs"
+                      variant="outline"
+                      disabled={roomData?.selectedIssue?._id === issue._id}
+                      onClick={() =>
+                        selectIssueInRoom({
+                          id: issue._id,
+                          roomId: roomId as Id<"rooms">,
+                        })
+                      }
+                    >
+                      Select Issue <ArrowRightIcon className="h-3.5 w-3.5" />
+                    </Button>
+                    <div className="grow h-7 border bg-background shadow-xs dark:bg-input/30 dark:border-input rounded-md flex items-center justify-start px-2">
+                      {issue.status.type === "pendingVote" ? (
+                        <span className="text-xs text-muted-foreground">
+                          Pending Vote
                         </span>
-                      </span>
-                    )}
+                      ) : issue.status.type === "roomSelectedIssue" ? (
+                        <span className="text-xs text-muted-foreground animate-pulse">
+                          Currently Selected...
+                        </span>
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          Estimated:{" "}
+                          <span className="font-medium">
+                            {issue.status.estimate}
+                          </span>
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </ScrollArea>
         )}
       </SidebarGroupContent>
     </SidebarGroup>
