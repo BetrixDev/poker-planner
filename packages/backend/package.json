@@ -17,10 +17,12 @@
     "@convex-dev/presence": "^0.2.1",
     "@convex-dev/workflow": "^0.2.7",
     "@convex-dev/workpool": "^0.2.18",
+    "@faker-js/faker": "^10.0.0",
     "@openrouter/ai-sdk-provider": "^1.2.0",
     "ai": "^5.0.68",
     "better-auth": "catalog:",
     "convex": "catalog:",
+    "es-toolkit": "^1.40.0",
     "zod": "^4.1.12"
   }
 }

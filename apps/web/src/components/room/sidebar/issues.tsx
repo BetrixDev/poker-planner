@@ -207,7 +207,10 @@ function AddIssueDialogContent({ roomId }: AddIssueDialogContentProps) {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>Edit Issue</DialogTitle>
+        <DialogTitle>Add Issue</DialogTitle>
+        <DialogDescription>
+          Add a new issue to estimate in this room.
+        </DialogDescription>
       </DialogHeader>
       <div className="space-y-4">
         <form.Field
@@ -218,9 +221,9 @@ function AddIssueDialogContent({ roomId }: AddIssueDialogContentProps) {
         >
           {(field) => (
             <div className="space-y-2">
-              <Label htmlFor="edit-title">Title</Label>
+              <Label htmlFor="title">Title</Label>
               <Input
-                id="edit-title"
+                id="title"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="Enter issue title"
@@ -231,9 +234,9 @@ function AddIssueDialogContent({ roomId }: AddIssueDialogContentProps) {
         <form.Field name="description">
           {(field) => (
             <div className="space-y-2">
-              <Label htmlFor="edit-description">Description</Label>
+              <Label htmlFor="description">Description</Label>
               <Input
-                id="edit-description"
+                id="description"
                 value={field.state.value}
                 onChange={(e) => field.handleChange(e.target.value)}
                 placeholder="Enter issue description"

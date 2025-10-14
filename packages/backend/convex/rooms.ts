@@ -102,7 +102,13 @@ export const getRoomById = query({
       : null;
 
     return {
-      room,
+      room: {
+        ...room,
+        users: room.users.map((user) => ({
+          ...user,
+          isOwner: room.ownerId === user.presenceId,
+        })),
+      },
       issues: roomIssues,
       selectedIssue,
     };
@@ -310,5 +316,28 @@ export const selectIssueInRoom = mutation({
     await ctx.db.patch(args.roomId, {
       selectedIssueId: args.id,
     });
+  },
+});
+
+export const getCurrentUserRoleInRoom = query({
+  args: {
+    roomId: v.id("rooms"),
+    presenceId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const room = await ctx.db.get(args.roomId);
+
+    if (!room) {
+      throw new ConvexError("Room not found");
+    }
+
+    const roomUser = room.users.find(
+      (user) => user.presenceId === args.presenceId
+    );
+
+    return {
+      role: roomUser?.role,
+      isOwner: room.ownerId === args.presenceId,
+    };
   },
 });

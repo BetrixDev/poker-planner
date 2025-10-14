@@ -1,4 +1,3 @@
-import usePresence from "@convex-dev/presence/react";
 import { api } from "@poker-planner/backend/convex/_generated/api";
 import type { Id } from "@poker-planner/backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -17,45 +16,43 @@ import {
 } from "~/components/ui/sidebar";
 import { Route } from "~/routes/room_.$roomId";
 import { User2Icon } from "lucide-react";
+import { UserCard } from "./user-card";
 
-export function Facilitators({ presenceId }: { presenceId: string }) {
+export function Facilitators() {
   const params = Route.useParams();
 
   const roomData = useQuery(api.rooms.getRoomById, {
     id: params.roomId as Id<"rooms">,
   });
 
-  const presence = usePresence(api.presence, params.roomId, presenceId) ?? [];
+  const presence =
+    useQuery(api.presence.list, {
+      roomToken: roomData?.room?._id ?? "",
+    }) ?? [];
 
   if (!roomData) {
     return null;
   }
 
-  const roomFacilitators = roomData.room?.users
-    ?.filter((user) => user.role === "facilitator")
-    ?.map((facilitator) => {
-      const facilitatorPresence = presence.find(
-        (p) => p.userId === facilitator.presenceId
+  const roomFacilitators = presence
+    .map((presenceUser) => {
+      const user = roomData.room?.users?.find(
+        (u) => u.presenceId === presenceUser.userId
       );
 
-      if (!facilitatorPresence) {
-        return {
-          userId: facilitator.presenceId,
-          lastSeen: "Unknown",
-          username: "Unknown",
-          online: false,
-        };
+      if (!user || user.role !== "facilitator") {
+        return null;
       }
 
       return {
-        userId: facilitator.userId,
-        lastSeen: new Date(
-          facilitatorPresence.lastDisconnected
-        ).toLocaleString(),
-        online: facilitatorPresence.online,
-        username: facilitatorPresence.name ?? "Unknown",
+        userId: presenceUser.userId,
+        username: user.displayName ?? "Unknown",
+        online: presenceUser.online,
+        profileImage: user.profileImage,
+        isOwner: user.isOwner,
       };
-    });
+    })
+    .filter((user) => user !== null);
 
   return (
     <SidebarGroup>
@@ -69,12 +66,18 @@ export function Facilitators({ presenceId }: { presenceId: string }) {
         <AddFacilitatorDialogContent />
       </Dialog>
       <SidebarGroupContent>
-        {roomFacilitators.map((facilitator) => (
-          <div key={facilitator.userId}>
-            <h1>{facilitator.username}</h1>
-            <p>{facilitator.lastSeen}</p>
-          </div>
-        ))}
+        <div className="space-y-2">
+          {roomFacilitators.map((facilitator) => (
+            <UserCard
+              key={facilitator.userId}
+              userId={facilitator.userId}
+              username={facilitator.username}
+              profileImage={facilitator.profileImage}
+              online={facilitator.online}
+              isOwner={facilitator.isOwner}
+            />
+          ))}
+        </div>
       </SidebarGroupContent>
     </SidebarGroup>
   );

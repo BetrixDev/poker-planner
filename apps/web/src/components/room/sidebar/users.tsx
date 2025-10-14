@@ -1,4 +1,3 @@
-import usePresence from "@convex-dev/presence/react";
 import { useQuery } from "convex/react";
 import { UsersIcon } from "lucide-react";
 import {
@@ -17,27 +16,52 @@ import {
 import { api } from "@poker-planner/backend/convex/_generated/api";
 import type { Id } from "@poker-planner/backend/convex/_generated/dataModel";
 import { Route } from "~/routes/room_.$roomId";
+import { UserCard } from "./user-card";
 
-export function Users({ presenceId }: { presenceId: string }) {
+export function Users() {
   const params = Route.useParams();
 
   const roomData = useQuery(api.rooms.getRoomById, {
     id: params.roomId as Id<"rooms">,
   });
 
-  const presence = usePresence(api.presence, params.roomId, presenceId) ?? [];
+  const presence =
+    useQuery(api.presence.list, {
+      roomToken: roomData?.room?._id ?? "",
+    }) ?? [];
 
   if (!roomData) {
     return null;
   }
 
-  const roomUsers = roomData.room?.users?.map((user) => {
-    const userPresence = presence.find((p) => p.userId === user.presenceId);
-    return {
-      ...user,
-      online: userPresence?.online,
-    };
-  });
+  const roomUsers = presence
+    .filter((presenceUser) => {
+      if (!presenceUser.lastDisconnected) return true;
+      const lastDisconnectedDate = new Date(presenceUser.lastDisconnected);
+      const now = new Date();
+      const diff = now.getTime() - lastDisconnectedDate.getTime();
+      const oneDayMs = 24 * 60 * 60 * 1000;
+      return diff <= oneDayMs;
+    })
+    .map((presenceUser) => {
+      const user = roomData.room?.users?.find(
+        (u) => u.presenceId === presenceUser.userId
+      );
+
+      if (user?.role === "facilitator") {
+        return null;
+      }
+
+      return {
+        userId: presenceUser.userId,
+        username: presenceUser.displayName,
+        online: presenceUser.online,
+        profileImage: presenceUser.profileImage,
+        isOwner: user?.isOwner,
+        role: user?.role,
+      };
+    })
+    .filter((user) => user !== null);
 
   return (
     <SidebarGroup>
@@ -51,12 +75,19 @@ export function Users({ presenceId }: { presenceId: string }) {
         <InviteUserDialogContent />
       </Dialog>
       <SidebarGroupContent>
-        {roomUsers.map((user) => (
-          <div key={user.presenceId}>
-            <h1>{user.displayName}</h1>
-            <p>{user.online ? "Online" : "Offline"}</p>
-          </div>
-        ))}
+        <div className="space-y-2">
+          {roomUsers?.map((user) => (
+            <UserCard
+              key={user.userId}
+              userId={user.userId}
+              username={user.username}
+              profileImage={user.profileImage}
+              online={user.online}
+              isOwner={user.isOwner}
+              role={user.role}
+            />
+          ))}
+        </div>
       </SidebarGroupContent>
     </SidebarGroup>
   );

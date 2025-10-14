@@ -25,7 +25,7 @@ export function usePresenceId() {
 
   const presenceId = nanoid(10);
 
-  localStorage.setItem("presenceId", presenceId);
+  localStorage.setItem("presenceId", `anon_${presenceId}`);
 
   return presenceId;
 }

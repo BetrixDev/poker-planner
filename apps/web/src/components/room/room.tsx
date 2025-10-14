@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
-import usePresence from "@convex-dev/presence/react";
 import { api } from "@poker-planner/backend/convex/_generated/api";
-import { authClient } from "~/lib/auth-client";
+import type { Id } from "@poker-planner/backend/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Skeleton } from "~/components/ui/skeleton";
@@ -142,27 +142,67 @@ function UserCard({ user }: UserCardProps) {
   );
 }
 
-const users: User[] = [
-  { id: "1", name: "Sara", icon: "🧑‍💼", vote: null },
-  { id: "2", name: "Jennifer", icon: "👩‍💻", vote: 5 },
-  { id: "3", name: "Michael", icon: "👨‍💼", vote: 8 },
-  { id: "4", name: "Alex", icon: "👨‍🔬", vote: null },
-  { id: "5", name: "Sam", icon: "👩‍🎨", vote: 3 },
-  { id: "6", name: "Jordan", icon: "🧑‍🎓", vote: null },
-  { id: "7", name: "Chris", icon: "🧑‍🍳", vote: 13 },
-  { id: "8", name: "Megan", icon: "👩‍🚒", vote: 2 },
+// User avatars/icons for display
+const USER_ICONS = [
+  "🧑‍💼",
+  "👩‍💻",
+  "👨‍💼",
+  "👨‍🔬",
+  "👩‍🎨",
+  "🧑‍🎓",
+  "🧑‍🍳",
+  "👩‍🚒",
+  "👨‍🚀",
+  "👩‍🏫",
+  "🧑‍⚕️",
+  "👨‍🌾",
 ];
 
-type RoomProps = {
-  presenceId: string;
-};
-
-export function Room({ presenceId }: RoomProps) {
+export function Room() {
   const { roomId } = Route.useParams();
 
-  const user = authClient.useSession();
+  const roomData = useQuery(api.rooms.getRoomById, {
+    id: roomId as Id<"rooms">,
+  });
 
-  const presence = usePresence(api.presence, roomId, presenceId) ?? [];
+  const presence =
+    useQuery(api.presence.list, {
+      roomToken: roomData?.room?._id ?? "",
+    }) ?? [];
+
+  // Map presence data to User type
+  const users: User[] = presence
+    .filter((presenceUser) => {
+      // Only show online users
+      if (!presenceUser.online) return false;
+
+      const roomUser = roomData?.room?.users?.find(
+        (u) => u.presenceId === presenceUser.userId
+      );
+
+      // Filter out facilitators and spectators
+      if (
+        !roomUser ||
+        roomUser.role === "facilitator" ||
+        roomUser.role === "spectator"
+      ) {
+        return false;
+      }
+
+      return true;
+    })
+    .map((presenceUser, index) => {
+      const roomUser = roomData?.room?.users?.find(
+        (u) => u.presenceId === presenceUser.userId
+      );
+
+      return {
+        id: presenceUser.userId,
+        name: presenceUser.displayName,
+        icon: USER_ICONS[index % USER_ICONS.length],
+        vote: roomUser?.currentVote ?? null,
+      };
+    });
 
   // Automatically assign positions to users
   const usersWithPositions: UserWithPosition[] = users.map((user, index) => ({
